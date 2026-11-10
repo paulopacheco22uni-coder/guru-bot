@@ -2,11 +2,7 @@ import os
 import json
 import urllib.request
 
-# Dividido para garantir que o Safari ou o telemóvel não corrompem o token ao copiar
-TOKEN_PART1 = "9126886161"
-TOKEN_PART2 = "AAFG_yGcdt0FH-_ofjHtGobtG0JWfI_BGzE"
-TOKEN = f"{TOKEN_PART1}:{TOKEN_PART2}"
-
+TOKEN = "9126886161:AAGEWjgU2PxjczZnAxWolelYvVs71tKvpoc"
 PORT = int(os.environ.get("PORT", "10000"))
 RENDER_URL = os.environ.get("RENDER_EXTERNAL_URL")
 
