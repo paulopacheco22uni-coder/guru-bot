@@ -7,6 +7,17 @@ P2 = "AAGEWjgU2PxjczZnAxWolelYvVs71tKvpoc"
 TOKEN = f"{P1}:{P2}"
 
 PORT = int(os.environ.get("PORT", "10000"))
+RENDER_URL = os.environ.get("RENDER_EXTERNAL_URL")
+
+# Força o registo do webhook no arranque de forma limpa
+if RENDER_URL:
+    webhook_target = f"{RENDER_URL}/"
+    set_url = f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={webhook_target}"
+    try:
+        response = urllib.request.urlopen(set_url, timeout=10)
+        print(f"✅ Webhook registado com sucesso no Telegram: {response.read().decode('utf-8')}")
+    except Exception as e:
+        print(f"⚠️ Erro ao registar webhook automaticamente: {e}")
 
 def handler(environ, start_response):
     try:
@@ -18,7 +29,7 @@ def handler(environ, start_response):
         body = environ['wsgi.input'].read(request_body_size)
         try:
             data = json.loads(body.decode('utf-8'))
-            print(f"📥 Dados recebidos do Telegram: {data}")
+            print(f"📥 MENSAGEM RECEBIDA DO TELEGRAM: {data}")
             
             if 'message' in data:
                 chat_id = data['message']['chat']['id']
@@ -28,14 +39,10 @@ def handler(environ, start_response):
                 payload = json.dumps({"chat_id": chat_id, "text": text}).encode('utf-8')
                 req = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'})
                 
-                try:
-                    urllib.request.urlopen(req, timeout=5)
-                    print("✅ Mensagem de resposta enviada ao Telegram com sucesso!")
-                except Exception as e_send:
-                    print(f"❌ Erro ao enviar resposta para o Telegram: {e_send}")
-                    
+                urllib.request.urlopen(req, timeout=5)
+                print("✅ Resposta enviada de volta ao Telegram!")
         except Exception as e:
-            print(f"❌ Erro ao ler JSON: {e}")
+            print(f"❌ Erro ao processar mensagem: {e}")
 
     start_response('200 OK', [('Content-Type', 'application/json')])
     return [b'{"status":"ok"}']
