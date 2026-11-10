@@ -26,10 +26,12 @@ def handler(environ, start_response):
         body = environ['wsgi.input'].read(request_body_size)
         data = json.loads(body.decode('utf-8'))
         
+        # Verifica se a mensagem contém uma foto
         if 'message' in data and 'photo' in data['message']:
             chat_id = data['message']['chat']['id']
-            text = "🔍 Mestre, print recebido! A preparar o radar para cruzar os dados com o SofaScore..."
+            text = "🔍 Mestre, print recebido com sucesso! A analisar as odds e a cruzar dados do SofaScore..."
             
+            # Envia a resposta de volta ao Telegram
             url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
             payload = json.dumps({"chat_id": chat_id, "text": text}).encode('utf-8')
             req = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'})
