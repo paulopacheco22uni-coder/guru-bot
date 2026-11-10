@@ -2,8 +2,23 @@ import os
 import json
 import urllib.request
 
-TOKEN = "9126886161:AAFG_yGcdt0FH-_ofjHtGobtG0JWfI_BGzE"
+# Dividido para garantir que o Safari ou o telemóvel não corrompem o token ao copiar
+TOKEN_PART1 = "9126886161"
+TOKEN_PART2 = "AAFG_yGcdt0FH-_ofjHtGobtG0JWfI_BGzE"
+TOKEN = f"{TOKEN_PART1}:{TOKEN_PART2}"
+
 PORT = int(os.environ.get("PORT", "10000"))
+RENDER_URL = os.environ.get("RENDER_EXTERNAL_URL")
+
+# Configura o webhook automaticamente ao arrancar no Render
+if RENDER_URL:
+    webhook_url = f"{RENDER_URL}/"
+    api_url = f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={webhook_url}"
+    try:
+        response = urllib.request.urlopen(api_url)
+        print(f"✅ Webhook ativado automaticamente: {response.read().decode('utf-8')}")
+    except Exception as e:
+        print(f"⚠️ Erro ao ativar webhook: {e}")
 
 def handler(environ, start_response):
     try:
@@ -26,7 +41,6 @@ def handler(environ, start_response):
         except Exception as e:
             print(f"Erro no processamento: {e}")
 
-    # O Telegram exige uma resposta OK imediata (200 OK)
     start_response('200 OK', [('Content-Type', 'application/json')])
     return [b'{"status":"ok"}']
 
