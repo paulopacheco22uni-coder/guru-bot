@@ -7,19 +7,24 @@ P2 = "AAGEWjgU2PxjczZnAxWolelYvVs71tKvpoc"
 TOKEN = f"{P1}:{P2}"
 
 PORT = int(os.environ.get("PORT", "10000"))
-RENDER_URL = os.environ.get("RENDER_EXTERNAL_URL")
-
-# Força o registo do webhook no arranque de forma limpa
-if RENDER_URL:
-    webhook_target = f"{RENDER_URL}/"
-    set_url = f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={webhook_target}"
-    try:
-        response = urllib.request.urlopen(set_url, timeout=10)
-        print(f"✅ Webhook registado com sucesso no Telegram: {response.read().decode('utf-8')}")
-    except Exception as e:
-        print(f"⚠️ Erro ao registar webhook automaticamente: {e}")
 
 def handler(environ, start_response):
+    # Se abrires o site no browser (GET), ativamos o webhook automaticamente de forma limpa!
+    if environ['REQUEST_METHOD'] == 'GET':
+        ext_url = os.environ.get("RENDER_EXTERNAL_URL")
+        if ext_url:
+            webhook_target = f"{ext_url}/"
+            set_url = f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={webhook_target}"
+            try:
+                resp = urllib.request.urlopen(set_url, timeout=10)
+                result_text = resp.read().decode('utf-8')
+                start_response('200 OK', [('Content-Type', 'application/json')])
+                return [f'{{"status": "webhook_registered", "telegram_response": {result_text}}}'.encode('utf-8')]
+            except Exception as e:
+                start_response('500 Internal Server Error', [('Content-Type', 'application/json')])
+                return [f'{{"error": "{str(e)}"}}'.encode('utf-8')]
+
+    # Processamento de mensagens do Telegram (POST)
     try:
         request_body_size = int(environ.get('CONTENT_LENGTH', 0))
     except (ValueError):
