@@ -1,23 +1,35 @@
-import logging
-from telegram import Update
-from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
-
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
+import os
+import json
+import urllib.request
+import urllib.parse
 
 TOKEN = "9126886161:AAFG_yGcdt0FH-_ofjHtGobtG0JWfI_BGzE"
+PORT = int(os.environ.get("PORT", "10000"))
 
-async def lidar_com_foto(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🔍 Mestre, print recebido! A preparar o radar para cruzar os dados com o SofaScore...")
+def handler(environ, start_response):
+    try:
+        request_body_size = int(environ.get('CONTENT_LENGTH', 0))
+    except (ValueError):
+        request_body_size = 0
 
-def main():
-    application = ApplicationBuilder().token(TOKEN).build()
-    application.add_handler(MessageHandler(filters.PHOTO, lidar_com_foto))
-    
-    print("🤖 Bot do Guru a arrancar em modo polling...")
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
+    if environ['REQUEST_METHOD'] == 'POST':
+        body = environ['wsgi.input'].read(request_body_size)
+        data = json.loads(body.decode('utf-8'))
+        
+        if 'message' in data and 'photo' in data['message']:
+            chat_id = data['message']['chat']['id']
+            text = "🔍 Mestre, print recebido! A preparar o radar para cruzar os dados com o SofaScore..."
+            
+            url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+            payload = json.dumps({"chat_id": chat_id, "text": text}).encode('utf-8')
+            req = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'})
+            urllib.request.urlopen(req)
+
+    start_response('200 OK', [('Content-Type', 'text/plain')])
+    return [b"Bot do Guru ativo!"]
 
 if __name__ == '__main__':
-    main()
+    from wsgiref.simple_server import make_server
+    print(f"🤖 Bot nativo a arrancar na porta {PORT}...")
+    httpd = make_server('0.0.0.0', PORT, handler)
+    httpd.serve_forever()
