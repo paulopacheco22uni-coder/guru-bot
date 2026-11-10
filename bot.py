@@ -7,14 +7,15 @@ TOKEN = "9126886161:AAFG_yGcdt0FH-_ofjHtGobtG0JWfI_BGzE"
 PORT = int(os.environ.get("PORT", "10000"))
 RENDER_URL = os.environ.get("RENDER_EXTERNAL_URL")
 
-# Configura o webhook automaticamente ao arrancar
+# O próprio bot configura o webhook sozinho assim que arranca no Render
 if RENDER_URL:
-    webhook_api = f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={RENDER_URL}/"
+    webhook_url = f"{RENDER_URL}/"
+    api_url = f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={webhook_url}"
     try:
-        urllib.request.urlopen(webhook_api)
-        print("✅ Webhook configurado automaticamente com sucesso!")
+        urllib.request.urlopen(api_url)
+        print("✅ Webhook ativado automaticamente com sucesso no Telegram!")
     except Exception as e:
-        print(f"⚠️ Erro ao configurar webhook: {e}")
+        print(f"⚠️ Erro ao ativar webhook: {e}")
 
 def handler(environ, start_response):
     try:
@@ -26,12 +27,11 @@ def handler(environ, start_response):
         body = environ['wsgi.input'].read(request_body_size)
         data = json.loads(body.decode('utf-8'))
         
-        # Verifica se a mensagem contém uma foto
+        # Se mandares uma foto, o bot responde imediatamente
         if 'message' in data and 'photo' in data['message']:
             chat_id = data['message']['chat']['id']
             text = "🔍 Mestre, print recebido com sucesso! A analisar as odds e a cruzar dados do SofaScore..."
             
-            # Envia a resposta de volta ao Telegram
             url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
             payload = json.dumps({"chat_id": chat_id, "text": text}).encode('utf-8')
             req = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'})
