@@ -5,6 +5,16 @@ import urllib.parse
 
 TOKEN = "9126886161:AAFG_yGcdt0FH-_ofjHtGobtG0JWfI_BGzE"
 PORT = int(os.environ.get("PORT", "10000"))
+RENDER_URL = os.environ.get("RENDER_EXTERNAL_URL")
+
+# Configura o webhook automaticamente ao arrancar
+if RENDER_URL:
+    webhook_api = f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={RENDER_URL}/"
+    try:
+        urllib.request.urlopen(webhook_api)
+        print("✅ Webhook configurado automaticamente com sucesso!")
+    except Exception as e:
+        print(f"⚠️ Erro ao configurar webhook: {e}")
 
 def handler(environ, start_response):
     try:
@@ -26,7 +36,7 @@ def handler(environ, start_response):
             urllib.request.urlopen(req)
 
     start_response('200 OK', [('Content-Type', 'text/plain')])
-    return [b"Bot do Guru ativo!"]
+    return [b"Bot do Guru ativo e operacional!"]
 
 if __name__ == '__main__':
     from wsgiref.simple_server import make_server
