@@ -2,25 +2,14 @@ import os
 import json
 import urllib.request
 
-# Token do novo bot limpo
 TOKEN = "9058904513:AAE9T6K4PMZf0tHvLSbL-LQYAFhGcZTMpu8"
 PORT = int(os.environ.get("PORT", "10000"))
 
 def handler(environ, start_response):
-    # Se abrires o site no browser (GET), ativamos o webhook automaticamente
+    # Se abrirem o site no browser, respondemos logo OK para não dar erro
     if environ['REQUEST_METHOD'] == 'GET':
-        ext_url = os.environ.get("RENDER_EXTERNAL_URL")
-        if ext_url:
-            webhook_target = f"{ext_url}/"
-            set_url = f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={webhook_target}"
-            try:
-                resp = urllib.request.urlopen(set_url, timeout=10)
-                result_text = resp.read().decode('utf-8')
-                start_response('200 OK', [('Content-Type', 'application/json')])
-                return [f'{{"status": "webhook_registered", "telegram_response": {result_text}}}'.encode('utf-8')]
-            except Exception as e:
-                start_response('500 Internal Server Error', [('Content-Type', 'application/json')])
-                return [f'{{"error": "{str(e)}"}}'.encode('utf-8')]
+        start_response('200 OK', [('Content-Type', 'application/json')])
+        return [b'{"status": "bot_is_running_and_online"}']
 
     # Processamento de mensagens do Telegram (POST)
     try:
@@ -32,7 +21,7 @@ def handler(environ, start_response):
         body = environ['wsgi.input'].read(request_body_size)
         try:
             data = json.loads(body.decode('utf-8'))
-            print(f"📥 MENSAGEM RECEBIDA DO TELEGRAM: {data}")
+            print(f"📥 MENSAGEM RECEBIDA: {data}")
             
             if 'message' in data:
                 chat_id = data['message']['chat']['id']
@@ -43,15 +32,15 @@ def handler(environ, start_response):
                 req = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'})
                 
                 urllib.request.urlopen(req, timeout=5)
-                print("✅ Resposta enviada de volta ao Telegram!")
+                print("✅ Resposta enviada ao Telegram com sucesso!")
         except Exception as e:
-            print(f"❌ Erro ao processar mensagem: {e}")
+            print(f"❌ Erro: {e}")
 
     start_response('200 OK', [('Content-Type', 'application/json')])
     return [b'{"status":"ok"}']
 
 if __name__ == '__main__':
     from wsgiref.simple_server import make_server
-    print(f"🤖 Bot v2 a arrancar na porta {PORT}...")
+    print(f"🤖 Bot blindado a arrancar na porta {PORT}...")
     httpd = make_server('0.0.0.0', PORT, handler)
     httpd.serve_forever()
