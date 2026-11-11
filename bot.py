@@ -3,11 +3,14 @@ import json
 import urllib.request
 import time
 
-# O .strip() retira automaticamente qualquer espaço ou quebra de linha invisível
-TOKEN = "9058904513:AAE9T6K4PMZf0tHvLSbL-LQYAFhGcZTMpu8".strip()
+TOKEN = os.environ.get("BOT_TOKEN", "").strip()
 
 def run_bot():
-    print("🤖 GuruBot a escutar na Railway com token limpo...")
+    if not TOKEN:
+        print("❌ ERRO CRÍTICO: BOT_TOKEN não encontrado nas variáveis de ambiente da Railway!")
+        return
+
+    print("🤖 GuruBot a escutar na Railway com token seguro...")
     
     try:
         urllib.request.urlopen(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook", timeout=10)
@@ -27,7 +30,7 @@ def run_bot():
                     offset = update['update_id'] + 1
                     if 'message' in update:
                         chat_id = update['message']['chat']['id']
-                        print(f"📥 Mensagem recebida com sucesso do chat ID: {chat_id}")
+                        print(f"📥 Mensagem recebida do chat ID: {chat_id}")
                         
                         text = "🔍 Mestre, mensagem recebida com sucesso! A analisar as odds..."
                         send_url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
