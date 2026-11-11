@@ -2,11 +2,12 @@ import os
 import json
 import urllib.request
 
+# Token do novo bot limpo
 TOKEN = "9058904513:AAE9T6K4PMZf0tHvLSbL-LQYAFhGcZTMpu8"
 PORT = int(os.environ.get("PORT", "10000"))
 
 def handler(environ, start_response):
-    # Se abrires o site no browser (GET), ativamos o webhook automaticamente de forma limpa!
+    # Se abrires o site no browser (GET), ativamos o webhook automaticamente
     if environ['REQUEST_METHOD'] == 'GET':
         ext_url = os.environ.get("RENDER_EXTERNAL_URL")
         if ext_url:
@@ -51,6 +52,6 @@ def handler(environ, start_response):
 
 if __name__ == '__main__':
     from wsgiref.simple_server import make_server
-    print(f"🤖 Bot nativo a arrancar na porta {PORT}...")
+    print(f"🤖 Bot v2 a arrancar na porta {PORT}...")
     httpd = make_server('0.0.0.0', PORT, handler)
     httpd.serve_forever()
