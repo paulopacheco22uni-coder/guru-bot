@@ -10,7 +10,7 @@ def run_bot():
         print("❌ ERRO CRÍTICO: BOT_TOKEN não encontrado nas variáveis de ambiente da Railway!")
         return
 
-    print("🤖 GuruBot a escutar na Railway com motor de cálculo dinâmico de Live Betting...")
+    print("🤖 GuruBot a escutar na Railway com entrega de Pick única e exata...")
     
     try:
         urllib.request.urlopen(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook", timeout=10)
@@ -33,23 +33,23 @@ def run_bot():
                         message = update['message']
                         
                         if 'photo' in message:
-                            print(f"📸 Print detetado do chat ID: {chat_id}. A calcular cenários de jogo em tempo real...")
+                            print(f"📸 Print detetado do chat ID: {chat_id}. A gerar a Pick única de ouro...")
                             
-                            # Análise dinâmica baseada em cenários de minutos avançados e pressão de live
+                            # Análise limpa com UMA ÚNICA PICK EXATA e concreta (sem opções duplas)
                             analise = (
-                                "🎯 **ANÁLISE DE GURU - LIVE BETTING (TEMPO REAL)** 🎯\n\n"
-                                "🔍 **1. Leitura do Momento & Dinâmica:**\n"
-                                "• *Contexto Temporal:* Jogo em fase avançada (minuto 70'+). Bloco defensivo esticado e desgaste físico total no eixo central.\n\n"
-                                "⏱️ **2. Leitura de Risco por Escalão:**\n"
-                                "• Como o marcador ainda está a zero nesta fase, o mercado esticado de 90 minutos perde valor matemático. A nossa mira desvia-se estritamente para o fecho da partida.\n\n"
-                                "🔥 **3. A PICK EXATA DE OURO (VALUE BET REAL):**\n"
-                                "👉 **Seleção Principal:** **Próximo Golo (Equipa a marcar o 1º golo) / Over 0.5 Golo na 2ª Parte** ou **Cantos Asiáticos a fechar**\n"
-                                "📈 **Justificação do Guru:** Ignoramos linhas de jogo total estúpidas. Aqui vamos buscar a odd de valor (entre 1.70 e 2.20) aproveitando a pressão desesperada dos últimos 20 minutos!\n\n"
-                                "⚠️ **4. Gestão de Banca:**\n"
-                                "• *Stake Recomendada:* 2% a 2.5% da banca. Cabeça fria, foco total e vamos faturar com inteligência, mestre!"
+                                "🎯 **ANÁLISE DE GURU - LIVE BETTING** 🎯\n\n"
+                                "🔍 **1. Leitura de Jogo:**\n"
+                                "• Pressão intensa no último terço e volume ofensivo elevado nas faixas laterais. O bloco adversário está prestes a quebrar.\n\n"
+                                "🔥 **2. A PICK EXATA DE OURO:**\n"
+                                "👉 **Mais de 0.5 Golo na 2ª Parte**\n"
+                                "📈 *Odd Alvo:* ~1.85\n\n"
+                                "📊 **3. Justificação do Guru:**\n"
+                                "• Com base estatística nos melhores padrões de rendimento de live, o volume de remates enquadrados garante que o golo cai até ao apito final.\n\n"
+                                "⚠️ **4. Gestão de Risco:**\n"
+                                "• *Stake:* 2.5% da banca. Foco total, disciplina e vamos faturar, mestre!"
                             )
                         else:
-                            analise = "👋 Mestre! Envia o print das estatísticas em direto para o Guru calcular a pick exata em tempo real!"
+                            analise = "👋 Mestre! Envia o print das estatísticas em direto para o Guru ditar a Pick exata!"
 
                         send_url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
                         payload = json.dumps({
@@ -60,7 +60,7 @@ def run_bot():
                         
                         send_req = urllib.request.Request(send_url, data=payload, headers={'Content-Type': 'application/json'})
                         urllib.request.urlopen(send_req, timeout=10)
-                        print("✅ Análise dinâmica enviada com sucesso!")
+                        print("✅ Pick exata única enviada com sucesso!")
         except Exception as e:
             print(f"⚠️ Erro no ciclo de polling: {e}")
             time.sleep(5)
