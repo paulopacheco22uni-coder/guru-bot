@@ -2,10 +2,7 @@ import os
 import json
 import urllib.request
 
-P1 = "9126886161"
-P2 = "AAGEWjgU2PxjczZnAxWolelYvVs71tKvpoc"
-TOKEN = f"{P1}:{P2}"
-
+TOKEN = "9058904513:AAE9T6K4PMZf0tHvLSbL-LQYAFhGcZTMpu8"
 PORT = int(os.environ.get("PORT", "10000"))
 
 def handler(environ, start_response):
